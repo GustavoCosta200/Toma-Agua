@@ -1,6 +1,7 @@
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     // Compose
     alias(libs.plugins.kotlin.compose)
     // Hilt
@@ -11,14 +12,12 @@ plugins {
 
 android {
     namespace = "com.example.tomagua"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 35   // <- sintaxe antiga, direto como propriedade
 
     defaultConfig {
         applicationId = "com.example.tomagua"
         minSdk = 26
-        targetSdk = 37
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -27,9 +26,7 @@ android {
 
     buildTypes {
         release {
-            optimization {
-                enable = false
-            }
+            isMinifyEnabled = false   // <- sintaxe antiga (era "minifyEnabled" em Groovy)
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

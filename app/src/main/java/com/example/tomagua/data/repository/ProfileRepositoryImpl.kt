@@ -19,7 +19,10 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override fun showAll(): Flow<List<Profile>> = profileDao.showAll()
 
-    override fun showActive(): Flow<Profile> = profileDao.showActive()
+    override fun showActive(): Flow<Profile?> = profileDao.showActive()
+
+    override suspend fun getProfileById(profileId: Long): Profile? =
+        profileDao.getProfileById(profileId)
 
     override suspend fun insert(profile: Profile): Long = profileDao.insert(profile)
 

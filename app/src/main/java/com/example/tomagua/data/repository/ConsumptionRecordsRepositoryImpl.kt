@@ -4,7 +4,9 @@ import com.example.tomagua.data.local.dao.ConsumptionRecordsDao
 import com.example.tomagua.data.local.entity.ConsumptionRecords
 import com.example.tomagua.domain.repository.ConsumptionRecordsRepository
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.inject.Inject
 
 class ConsumptionRecordsRepositoryImpl @Inject constructor(
@@ -19,6 +21,23 @@ class ConsumptionRecordsRepositoryImpl @Inject constructor(
 
     override fun watchByConfiguration(configurationId: Long): Flow<List<ConsumptionRecords>> =
         consumptionRecordsDao.watchByConfiguration(configurationId)
+
+    override fun watchTotalConsumedTodayByProfile(profileId: Long): Flow<Int> {
+        val today = LocalDate.now()
+        return consumptionRecordsDao.watchTotalConsumedTodayByProfile(
+            profileId = profileId,
+            startOfDay = today.atStartOfDay(),
+            endOfDay = today.atTime(LocalTime.MAX)
+        )
+    }
+
+    override fun watchByProfileAndDate(profileId: Long, date: LocalDate): Flow<List<ConsumptionRecords>> {
+        return consumptionRecordsDao.watchByProfileAndPeriod(
+            profileId = profileId,
+            start = date.atStartOfDay(),
+            end = date.atTime(LocalTime.MAX)
+        )
+    }
 
     override suspend fun insert(consumptionRecords: ConsumptionRecords): Long =
         consumptionRecordsDao.insert(consumptionRecords)

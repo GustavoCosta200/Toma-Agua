@@ -2,6 +2,7 @@ package com.example.tomagua.domain.repository
 
 import com.example.tomagua.data.local.entity.ConsumptionRecords
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -17,6 +18,10 @@ interface ConsumptionRecordsRepository {
 
     /** Observa o total (em ml) confirmado como consumido dentro de um período. */
     fun watchTotalConsumedInPeriod(start: LocalDateTime, end: LocalDateTime): Flow<Int>
+    // Ovserva Total consumido no dia pelo perfil
+    fun watchTotalConsumedTodayByProfile(profileId: Long): Flow<Int>
+
+    fun watchByProfileAndDate(profileId: Long, date: LocalDate): Flow<List<ConsumptionRecords>>
 
     suspend fun insert(consumptionRecords: ConsumptionRecords): Long
 

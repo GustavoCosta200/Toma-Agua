@@ -13,6 +13,8 @@ interface ConfigurationReminderRepository {
 
     suspend fun findById(id: Long): ConfigurationReminder?
 
+    fun watchDailyGoal(profileId: Long): Flow<Int>
+
     suspend fun insert(configurationReminder: ConfigurationReminder): Long
 
     suspend fun update(configurationReminder: ConfigurationReminder)

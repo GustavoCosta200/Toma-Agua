@@ -16,7 +16,10 @@ interface ProfileDao {
     fun showAll(): Flow<List<Profile>>
 
     @Query("SELECT * from profiles WHERE isActive = 1 LIMIT 1")
-    fun showActive(): Flow<Profile>
+    fun showActive(): Flow<Profile?>
+
+    @Query("SELECT * from profiles WHERE id = :profileId")
+    suspend fun getProfileById(profileId: Long): Profile?
 
     @Insert
     suspend fun insert(profile: Profile): Long

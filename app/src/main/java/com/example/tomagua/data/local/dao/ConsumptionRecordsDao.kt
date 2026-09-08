@@ -29,6 +29,33 @@ interface ConsumptionRecordsDao {
     """)
     fun watchTotalConsumedInPeriod(start: LocalDateTime, end: LocalDateTime): Flow<Int>
 
+    @Query("""
+    SELECT COALESCE(SUM(cr.mlQuantity), 0)
+    FROM consumption_records cr
+    INNER JOIN configurations_reminder cfg ON cr.configurationId = cfg.id
+    WHERE cfg.profileId = :profileId
+    AND cr.confirmed = 1
+    AND cr.dateTime BETWEEN :startOfDay AND :endOfDay
+""")
+    fun watchTotalConsumedTodayByProfile(
+        profileId: Long,
+        startOfDay: LocalDateTime,
+        endOfDay: LocalDateTime
+    ): Flow<Int>
+
+    @Query("""
+    SELECT cr.* FROM consumption_records cr
+    INNER JOIN configurations_reminder cfg ON cr.configurationId = cfg.id
+    WHERE cfg.profileId = :profileId
+    AND cr.dateTime BETWEEN :start AND :end
+    ORDER BY cr.dateTime DESC
+""")
+    fun watchByProfileAndPeriod(
+        profileId: Long,
+        start: LocalDateTime,
+        end: LocalDateTime
+    ): Flow<List<ConsumptionRecords>>
+
     @Insert
     suspend fun insert(consumptionRecords: ConsumptionRecords): Long
 

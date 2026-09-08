@@ -16,7 +16,10 @@ interface ProfileRepository {
     fun showAll(): Flow<List<Profile>>
 
     /*Observa perfil ativo*/
-    fun showActive(): Flow<Profile>
+    fun showActive(): Flow<Profile?>
+
+    // Observa Perfil a partir do Id
+    suspend fun getProfileById(profileId: Long): Profile?
 
     suspend fun insert(profile: Profile): Long
 

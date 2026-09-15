@@ -10,6 +10,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import javax.inject.Singleton
+import dagger.hilt.components.SingletonComponent
 
 
 /**
@@ -24,7 +25,7 @@ import javax.inject.Singleton
  * o código de fato em tempo de compilação.
  */
 @Module
-@InstallIn
+@InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
     @Binds

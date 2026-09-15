@@ -2,6 +2,7 @@ package com.example.tomagua.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tomagua.data.local.entity.ConfigurationReminder
 import com.example.tomagua.data.local.entity.ConsumptionRecords
 import com.example.tomagua.data.local.entity.Profile
 import com.example.tomagua.domain.repository.ConfigurationReminderRepository
@@ -20,12 +21,13 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val activeProfile: Profile? = null,
+    val activeReminders: List<ConfigurationReminder> = emptyList(),
     val consumedTodayMl: Int = 0,
     val goalMl: Int = 2000,
     val isLoading: Boolean = true
-){
+) {
     val progress: Float
-        get() = if (goalMl == 0) 0f else (consumedTodayMl.toFloat()/goalMl).coerceIn(0f, 1f)
+        get() = if (goalMl == 0) 0f else (consumedTodayMl.toFloat() / goalMl).coerceIn(0f, 1f)
 }
 
 @HiltViewModel
@@ -41,11 +43,13 @@ class HomeViewModel @Inject constructor(
                 flowOf(HomeUiState(isLoading = false))
             } else {
                 combine(
+                    configurationReminderRepository.watchByProfile(profile.id),
                     configurationReminderRepository.watchDailyGoal(profile.id),
                     consumptionRecordsRepository.watchTotalConsumedTodayByProfile(profile.id)
-                ) { goalMl, consumedMl ->
+                ) { reminders, goalMl, consumedMl ->
                     HomeUiState(
                         activeProfile = profile,
+                        activeReminders = reminders,
                         consumedTodayMl = consumedMl,
                         goalMl = goalMl,
                         isLoading = false

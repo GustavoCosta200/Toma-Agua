@@ -15,14 +15,15 @@ import javax.inject.Inject
 
 data class ConfigurationReminderUiState(
     val intervalHours: Int = 1,
-    val startTime: LocalTime = LocalTime.of(8,0),
+    val startTime: LocalTime = LocalTime.of(8, 0),
     val endTime: LocalTime = LocalTime.of(22, 0),
     val waterQuantityMl: Int = 250,
     val soundUri: String? = null,
     val message: String = "",
     val isSaving: Boolean = false,
-    val error: String? = null
-){
+    val error: String? = null,
+    val saveCompleted: Boolean = false
+) {
     val isValid: Boolean
         get() = startTime.isBefore(endTime) && waterQuantityMl > 0 && intervalHours > 0
 }
@@ -42,9 +43,9 @@ class ConfigurationReminderEditorViewModel @Inject constructor(
     fun onSoundSelected(uri: String) = _uiState.update { it.copy(soundUri = uri) }
     fun onMessageChanged(text: String) = _uiState.update { it.copy(message = text) }
 
-    fun save(profileId: Long){
-        if (!_uiState.value.isValid){
-            _uiState.update { it.copy(error =  "Horário final deve ser depois do inicial") }
+    fun save(profileId: Long) {
+        if (!_uiState.value.isValid) {
+            _uiState.update { it.copy(error = "Horário final deve ser depois do inicial") }
             return
         }
         viewModelScope.launch {
@@ -63,10 +64,9 @@ class ConfigurationReminderEditorViewModel @Inject constructor(
                     )
                 )
                 // Chamar alarmscheduler.reschedule aqui
-            }catch (e: Exception){
-                _uiState.update { it.copy(error = e.message) }
-            }finally {
-                _uiState.update { it.copy(isSaving = false) }
+                _uiState.update { it.copy(isSaving = false, saveCompleted = true) }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isSaving = false, error = e.message) }
             }
         }
     }

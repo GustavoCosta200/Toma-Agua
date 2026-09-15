@@ -38,7 +38,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
-
+    kotlinOptions {
+        jvmTarget = "17"
+    }
     buildFeatures {
         compose = true
     }
@@ -49,7 +51,7 @@ dependencies {
     // Jetpack Compose
     // ----------------------------------------
 
-    implementation(platform(libs.androidx.compose.bom))
+    implementation(platform(libs.versions.composeBom.get().let { "androidx.compose:compose-bom:$it" }))
 
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -97,6 +99,10 @@ dependencies {
     // ----------------------------------------
 
     implementation(libs.kotlinx.coroutines.android)
+
+    //Icons
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
 
     // Desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")

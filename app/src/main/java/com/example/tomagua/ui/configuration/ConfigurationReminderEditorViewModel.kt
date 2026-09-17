@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tomagua.data.local.entity.ConfigurationReminder
 import com.example.tomagua.domain.repository.ConfigurationReminderRepository
+import com.example.tomagua.domain.schedule.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +31,8 @@ data class ConfigurationReminderUiState(
 
 @HiltViewModel
 class ConfigurationReminderEditorViewModel @Inject constructor(
-    private val configurationReminderRepository: ConfigurationReminderRepository
+    private val configurationReminderRepository: ConfigurationReminderRepository,
+    private val reminderScheduler: ReminderScheduler
 ): ViewModel(){
 
     private val _uiState = MutableStateFlow(ConfigurationReminderUiState())
@@ -52,22 +54,37 @@ class ConfigurationReminderEditorViewModel @Inject constructor(
             _uiState.update { it.copy(isSaving = true, error = null) }
             try {
                 val s = _uiState.value
-                configurationReminderRepository.insert(
-                    ConfigurationReminder(
-                        profileId = profileId,
-                        hourInterval = s.intervalHours,
-                        startHour = s.startTime,
-                        endHour = s.endTime,
-                        mlQuantity = s.waterQuantityMl,
-                        soundUri = s.soundUri,
-                        message = s.message
-                    )
+                val configuration = ConfigurationReminder(
+                    profileId = profileId,
+                    hourInterval = s.intervalHours,
+                    startHour = s.startTime,
+                    endHour = s.endTime,
+                    mlQuantity = s.waterQuantityMl,
+                    soundUri = s.soundUri,
+                    message = s.message
                 )
-                // Chamar alarmscheduler.reschedule aqui
+                val insertedId = configurationReminderRepository.insert(configuration)
+                reminderScheduler.schedule(configuration.copy(id = insertedId))
                 _uiState.update { it.copy(isSaving = false, saveCompleted = true) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isSaving = false, error = e.message) }
             }
         }
+    }
+
+    // Temporário, só pra validar o fluxo antes de agendar a lista inteira (Etapa 7, passo de teste)
+    fun scheduleTestReminder(profileId: Long) {
+        val s = _uiState.value
+        reminderScheduler.scheduleTest(
+            ConfigurationReminder(
+                profileId = profileId,
+                hourInterval = s.intervalHours,
+                startHour = s.startTime,
+                endHour = s.endTime,
+                mlQuantity = s.waterQuantityMl,
+                soundUri = s.soundUri,
+                message = s.message.ifBlank { "Teste de notificação" }
+            )
+        )
     }
 }

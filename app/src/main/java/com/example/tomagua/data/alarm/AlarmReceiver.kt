@@ -72,7 +72,7 @@ class AlarmReceiver: BroadcastReceiver() {
             context, requestCode, nextIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextTrigger, pendingIntent)
+        alarmManager.setReminderAlarm(nextTrigger, pendingIntent)
     }
 
     companion object {

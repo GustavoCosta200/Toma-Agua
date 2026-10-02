@@ -159,6 +159,13 @@ fun ConfigurationReminderEditorScreen(
                     Text("Salvar lembrete")
                 }
             }
+
+            //Botao de teste
+            Button(
+                onClick = { viewModel.scheduleTestReminder(profileId) }
+            ) {
+                Text("Testar notificação em 1 min")
+            }
         }
     }
 

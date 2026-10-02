@@ -11,4 +11,6 @@ interface ReminderScheduler {
 
     // Agenda um único alarme de teste, 1 minuto no futuro, para validar o fluxo de funcionamento
     fun scheduleTest(configuration: ConfigurationReminder)
+
+    fun canScheduleExactAlarms(): Boolean
 }

@@ -37,8 +37,8 @@ class AlarmManagerReminderScheduler @Inject constructor(
                 slotIndex = index,
                 flags = PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
             )
-            pendingIntent?.let{
-                alarmManager.cancel { it }
+            pendingIntent?.let {
+                alarmManager.cancel(it)
                 it.cancel()
             }
         }
@@ -55,11 +55,11 @@ class AlarmManagerReminderScheduler @Inject constructor(
             hour = testTime.hour,
             minute = testTime.minute
         )!!
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerAtMillis,
-            pendingIntent)
+        alarmManager.setReminderAlarm(triggerAtMillis, pendingIntent)
     }
+
+    // novo método, para a UI consultar:
+    override fun canScheduleExactAlarms(): Boolean = alarmManager.canScheduleExact()
 
     private fun scheduleSlot(configuration: ConfigurationReminder, index: Int, time: LocalTime){
         val pendingIntent = buildPendingIntent(
@@ -70,11 +70,7 @@ class AlarmManagerReminderScheduler @Inject constructor(
             hour = time.hour,
             minute = time.minute
         )!!
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            nextTriggerMillis(time),
-            pendingIntent
-        )
+        alarmManager.setReminderAlarm(nextTriggerMillis(time), pendingIntent)
     }
 
     private fun nextTriggerMillis(time: LocalTime, now: LocalDateTime = LocalDateTime.now()): Long {

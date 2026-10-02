@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.tomagua.data.local.entity.Profile
+import com.example.tomagua.ui.permissions.PermissionsHandler
 import com.example.tomagua.ui.theme.extraColors
+import java.security.Permission
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +31,8 @@ fun ProfileListScreen(
 ) {
     val profiles by viewModel.profiles.collectAsStateWithLifecycle()
     var profilePendingDelete by remember { mutableStateOf<Profile?>(null) }
+    //Trata as permissões de alarme
+    PermissionsHandler(canScheduleExactAlarms = viewModel::canScheduleExactAlarms)
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

@@ -19,6 +19,9 @@ class ConfigurationReminderRepositoryImpl @Inject constructor(
     override fun watchDailyGoal(profileId: Long): Flow<Int> =
         configurationReminderDao.watchDailyGoal(profileId)
 
+    override suspend fun findAll(): List<ConfigurationReminder> =
+        configurationReminderDao.findAll()
+
     override suspend fun insert(configurationReminder: ConfigurationReminder): Long =
         configurationReminderDao.insert(configurationReminder)
 

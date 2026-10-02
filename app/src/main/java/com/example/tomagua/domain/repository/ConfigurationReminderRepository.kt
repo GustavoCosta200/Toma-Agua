@@ -15,6 +15,9 @@ interface ConfigurationReminderRepository {
 
     fun watchDailyGoal(profileId: Long): Flow<Int>
 
+    /** Leitura única de todas as configurações (usada para reagendar alarmes após boot). */
+    suspend fun findAll(): List<ConfigurationReminder>
+
     suspend fun insert(configurationReminder: ConfigurationReminder): Long
 
     suspend fun update(configurationReminder: ConfigurationReminder)

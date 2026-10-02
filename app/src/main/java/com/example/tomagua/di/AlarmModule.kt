@@ -20,7 +20,7 @@ abstract class AlarmBindsModule{
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AlarmProvidesModule{
+object AlarmProvidesModule{
     @Provides
     fun provideAlarmManager(@ApplicationContext context: Context): AlarmManager =
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager

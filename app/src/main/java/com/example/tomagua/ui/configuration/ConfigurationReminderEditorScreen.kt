@@ -24,6 +24,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.tomagua.ui.util.clickableSimple
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,13 +63,41 @@ fun ConfigurationReminderEditorScreen(
                     containerColor = MaterialTheme.colorScheme.background
                 )
             )
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Button(
+                    onClick = { viewModel.save(profileId) },
+                    enabled = uiState.isValid && !uiState.isSaving,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    if (uiState.isSaving) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text("Salvar lembrete")
+                    }
+                }
+            }
         }
     ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(24.dp)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp)
         ) {
             SectionLabel("Intervalo entre lembretes")
             StepperRow(
@@ -139,32 +169,6 @@ fun ConfigurationReminderEditorScreen(
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = { viewModel.save(profileId) },
-                enabled = uiState.isValid && !uiState.isSaving,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                if (uiState.isSaving) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(18.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    Text("Salvar lembrete")
-                }
-            }
-
-            //Botao de teste
-            Button(
-                onClick = { viewModel.scheduleTestReminder(profileId) }
-            ) {
-                Text("Testar notificação em 1 min")
             }
         }
     }

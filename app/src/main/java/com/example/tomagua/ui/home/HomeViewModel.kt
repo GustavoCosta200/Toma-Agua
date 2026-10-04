@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.tomagua.data.local.entity.ConfigurationReminder
 import com.example.tomagua.data.local.entity.ConsumptionRecords
 import com.example.tomagua.data.local.entity.Profile
+import com.example.tomagua.domain.dailyMl
 import com.example.tomagua.domain.repository.ConfigurationReminderRepository
 import com.example.tomagua.domain.repository.ConsumptionRecordsRepository
 import com.example.tomagua.domain.repository.ProfileRepository
@@ -23,7 +24,7 @@ data class HomeUiState(
     val activeProfile: Profile? = null,
     val activeReminders: List<ConfigurationReminder> = emptyList(),
     val consumedTodayMl: Int = 0,
-    val goalMl: Int = 2000,
+    val goalMl: Int = 0,
     val isLoading: Boolean = true
 ) {
     val progress: Float
@@ -44,14 +45,13 @@ class HomeViewModel @Inject constructor(
             } else {
                 combine(
                     configurationReminderRepository.watchByProfile(profile.id),
-                    configurationReminderRepository.watchDailyGoal(profile.id),
                     consumptionRecordsRepository.watchTotalConsumedTodayByProfile(profile.id)
-                ) { reminders, goalMl, consumedMl ->
+                ) { reminders, consumedMl ->
                     HomeUiState(
                         activeProfile = profile,
                         activeReminders = reminders,
                         consumedTodayMl = consumedMl,
-                        goalMl = goalMl,
+                        goalMl = reminders.sumOf { it.dailyMl() },
                         isLoading = false
                     )
                 }

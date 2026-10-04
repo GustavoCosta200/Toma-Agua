@@ -17,9 +17,6 @@ interface ConfigurationReminderDao {
     @Query("SELECT * FROM configurations_reminder WHERE id = :id")
     suspend fun findById(id: Long): ConfigurationReminder?
 
-    @Query("SELECT COALESCE(SUM(mlQuantity), 0) FROM configurations_reminder WHERE profileId = :profileId")
-    fun watchDailyGoal(profileId: Long): Flow<Int>
-
     @Query("SELECT * FROM configurations_reminder") // ajuste ao tableName da sua @Entity
     suspend fun findAll(): List<ConfigurationReminder>
 

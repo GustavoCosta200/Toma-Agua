@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.tomagua.data.local.entity.Profile
 import com.example.tomagua.ui.permissions.PermissionsHandler
 import com.example.tomagua.ui.theme.extraColors
-import java.security.Permission
+import androidx.compose.material.icons.filled.Alarm
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,8 +157,8 @@ private fun ProfileCard(
 
         IconButton(onClick = onAddReminder) {
             Icon(
-                Icons.Default.Add,
-                contentDescription = "Adicionar lembrete",
+                Icons.Default.Alarm,
+                contentDescription = "Configurar lembrete",
                 tint = MaterialTheme.colorScheme.primary
             )
         }

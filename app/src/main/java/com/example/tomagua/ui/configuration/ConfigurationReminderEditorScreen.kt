@@ -49,7 +49,12 @@ fun ConfigurationReminderEditorScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Novo lembrete", color = MaterialTheme.colorScheme.onBackground) },
+                title = {
+                    Text(
+                        if (uiState.isEditing) "Editar Lembrete" else "Novo Lembrete",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
@@ -75,7 +80,7 @@ fun ConfigurationReminderEditorScreen(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Button(
-                    onClick = { viewModel.save(profileId) },
+                    onClick = { viewModel.save() },
                     enabled = uiState.isValid && !uiState.isSaving,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
@@ -86,7 +91,7 @@ fun ConfigurationReminderEditorScreen(
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        Text("Salvar lembrete")
+                        Text(if (uiState.isEditing) "Salvar alterações" else "Salvar lembrete")
                     }
                 }
             }

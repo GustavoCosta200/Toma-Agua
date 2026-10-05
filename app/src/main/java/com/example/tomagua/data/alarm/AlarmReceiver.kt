@@ -32,7 +32,13 @@ class AlarmReceiver: BroadcastReceiver() {
         val soundUri = intent.getStringExtra(EXTRA_SOUND_URI)
 
         val notificationId = (configId * 100 + slotIndex).toInt()
-        notificationHelper.showReminderNotification(notificationId, message, waterQuantityMl, soundUri)
+        notificationHelper.showReminderNotification(
+            notificationId = notificationId,
+            configId = configId,
+            message = message,
+            waterQuantityMl = waterQuantityMl,
+            soundUri = soundUri
+        )
 
         // Auto-reagendamento: como setExactAndAllowWhileIdle() não repete sozinho,
         // recriamos o mesmo horário pro dia seguinte assim que este disparo acontece.

@@ -3,7 +3,9 @@ package com.example.tomagua.data.alarm
 import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.RingtoneManager
@@ -13,8 +15,8 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.example.tomagua.MainActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.jar.Manifest
 import javax.inject.Inject
 
 class NotificationHelper @Inject constructor(
@@ -56,6 +58,7 @@ class NotificationHelper @Inject constructor(
     @RequiresPermission(android.Manifest.permission.POST_NOTIFICATIONS)
     fun showReminderNotification(
         notificationId: Int,
+        configId: Long,
         message: String,
         waterQuantityMl: Int,
         soundUri: String?
@@ -65,10 +68,11 @@ class NotificationHelper @Inject constructor(
         val content = message.ifBlank { "Hora de beber água! Beba $waterQuantityMl ml." }
 
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_dialog_info) // Trocar pelo Ícone do App
+            .setSmallIcon(R.drawable.ic_dialog_info)
             .setContentTitle("Toma Água")
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(buildContentIntent(notificationId, configId, waterQuantityMl))
             .setAutoCancel(true)
             .build()
 
@@ -76,11 +80,33 @@ class NotificationHelper @Inject constructor(
         // concedida em runtime
 
         val canNotify = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-                ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) ==
-                PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    context, android.Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
 
         if (canNotify){
             NotificationManagerCompat.from(context).notify(notificationId, notification)
         }
+    }
+
+    private fun buildContentIntent(
+        notificationId: Int,
+        configId: Long,
+        waterQuantityMl: Int
+    ): PendingIntent {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(NotificationIntents.EXTRA_NOTIFICATION_ID, notificationId)
+            putExtra(NotificationIntents.EXTRA_CONFIG_ID, configId)
+            putExtra(NotificationIntents.EXTRA_WATER_QUANTITY, waterQuantityMl)
+        }
+        // requestCode = notificationId + FLAG_UPDATE_CURRENT: o PendingIntent da configuração
+        // é reaproveitado e só os extras são atualizados (extras não entram na comparação).
+        return PendingIntent.getActivity(
+            context,
+            notificationId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
     }
 }

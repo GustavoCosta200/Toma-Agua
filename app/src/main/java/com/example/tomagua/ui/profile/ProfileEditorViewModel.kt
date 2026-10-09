@@ -17,6 +17,7 @@ import javax.inject.Inject
 data class ProfileEditorUiState(
     val name: String = "",
     val isActive: Boolean = false,
+    val requirePhoto: Boolean = false,
     val isEditing: Boolean = false,
     val isSaving: Boolean = false,
     val error: String? = null,
@@ -39,7 +40,13 @@ class ProfileEditorViewModel @Inject constructor(
         profileId?.let { id ->
             viewModelScope.launch {
                 profileRepository.getProfileById(id)?.let { profile ->
-                    _uiState.update { it.copy(name = profile.name, isActive = profile.isActive) }
+                    _uiState.update {
+                        it.copy(
+                            name = profile.name,
+                            isActive = profile.isActive,
+                            requirePhoto = profile.requirePhoto
+                        )
+                    }
                 }
             }
         }
@@ -49,8 +56,13 @@ class ProfileEditorViewModel @Inject constructor(
         _uiState.update { it.copy(name = name, error = null) }
     }
 
+    fun onRequirePhotoChanged(required: Boolean) {
+        _uiState.update { it.copy(requirePhoto = required) }
+    }
+
     fun save() {
-        val name = _uiState.value.name.trim()
+        val state = _uiState.value
+        val name = state.name.trim()
         if (name.isBlank()) {
             _uiState.update { it.copy(error = "Nome não pode ser vazio!") }
             return
@@ -58,9 +70,16 @@ class ProfileEditorViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true) }
             if (profileId != null){
-                profileRepository.update(Profile(id = profileId, name = name, isActive = _uiState.value.isActive))
+                profileRepository.update(
+                    Profile(
+                        id = profileId,
+                        name = name,
+                        isActive = state.isActive,
+                        requirePhoto = state.requirePhoto
+                    )
+                )
             } else {
-                profileRepository.insert(Profile(name = name))
+                profileRepository.insert(Profile(name = name, requirePhoto = state.requirePhoto))
             }
             _uiState.update { it.copy(isSaving = false, saveCompleted = true) }
         }

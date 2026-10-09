@@ -12,7 +12,7 @@ import com.example.tomagua.data.local.entity.Profile
 
 @Database(
     entities = [Profile::class, ConfigurationReminder::class, ConsumptionRecords::class],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

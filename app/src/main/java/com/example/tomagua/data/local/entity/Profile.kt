@@ -1,4 +1,5 @@
 package com.example.tomagua.data.local.entity
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -6,5 +7,7 @@ import androidx.room.PrimaryKey
 data class Profile (
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
-    val isActive: Boolean = false
+    val isActive: Boolean = false,
+    // O defaultValue precisa bater com o DEFAULT da migration.
+    @ColumnInfo(defaultValue = "0") val requirePhoto: Boolean = false
 )

@@ -22,5 +22,6 @@ data class ConsumptionRecords(
     val configurationId: Long,
     val dateTime: LocalDateTime,
     val mlQuantity: Int,
-    val confirmed: Boolean = false
+    val confirmed: Boolean = false,
+    val photoPath: String? = null //Salva o nome do arquivo da foto
 )

@@ -3,6 +3,7 @@ package com.example.tomagua.di
 import android.content.Context
 import androidx.room.Room
 import com.example.tomagua.data.local.AppDatabase
+import com.example.tomagua.data.local.MIGRATION_1_2
 import com.example.tomagua.data.local.dao.ConfigurationReminderDao
 import com.example.tomagua.data.local.dao.ConsumptionRecordsDao
 import com.example.tomagua.data.local.dao.ProfileDao
@@ -26,7 +27,9 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "toma_agua_database"
-        ).build()
+        )
+            .addMigrations(MIGRATION_1_2)
+            .build()
     }
 
     @Provides
